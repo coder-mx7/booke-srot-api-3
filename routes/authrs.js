@@ -1,6 +1,6 @@
 const express = require('express')
 const Author = require('../models/Authrs')
-
+const asyncHandler = require('express-async-handler') 
 
 const router = express.Router()
 const Joi = require('joi');
@@ -15,13 +15,13 @@ const mongoose = require('mongoose');
  */
 
 
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
     getAuthors = await Author.find()
     console.log(getAuthors)
     if (getAuthors) {
         res.json(getAuthors)
-    }
-})
+    };
+}) )
 
 /**
  * @method GET
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
  * @description Get a specific Family by ID
  */
 
-router.get('/:id', async (req, res) => {
+router.get('/:id',  async (req, res) => {
 
     try {
         id = req.params.id
@@ -52,7 +52,7 @@ router.get('/:id', async (req, res) => {
  * @description Create a new Family
  */
 
-router.post('/', async (req, res) => {
+router.post('/', asyncHandler(  async (req, res) => {
     const { error } = vaildcreate(req.body)
     if (error) {
         return res.status(400).json(error.details[0].message)
@@ -68,12 +68,7 @@ router.post('/', async (req, res) => {
     });
     await newfamily.save();
     res.json(newfamily);
-
-
-
-
-
-})
+}))
 function vaildcreate(opj) {
     const schema = Joi.object({
         name: Joi.string().trim().max(30).min(3).required(),
@@ -89,26 +84,32 @@ function vaildcreate(opj) {
  * @route api/family/:id
  * @access public
  * @description Update a specific Family by ID
- */
+**/
 
 
-router.put('/:id', (req, res) => {
+router.put('/:id', asyncHandler( async(req, res) => {
     const { error } = vaildupdate(req.body)
 
     if (error) {
         res.status(400).json(error.details[0].message)
     }
     id =req.params.id
-    const famil = Familiys.put(id)
-
-
-    if (famil) {
-        res.status(200).json('this family has update')
-    } else {
-        res.status(400).json('this family is not found')
+    const famil = await Author.findByIdAndUpdate(id,{
+        $set:{
+            name:req.body.name,
+            nome:req.body.nome,
+            age:req.body.age,
+        }
+    },{
+        new:true
+    })
+    if(famil){
+        res.send(famil)
     }
-    Familiys.push(famil)
-})
+
+
+   
+}))
 function vaildupdate(opj) {
     const schema = Joi.object({
         name: Joi.string().trim().min(3).max(30),
@@ -126,17 +127,16 @@ function vaildupdate(opj) {
  * @description Delete a specific Family by ID
  */
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',asyncHandler  (async (req, res) => {
     id = req.params.id
-    const famil = await Author.findByIdAndDelete(id)
+    const famil = await Author.findById(id)
 
     if (famil) {
-        res.status(200).json(famil)
+         famil = await Author.findByIdAndDelete(id)
     } else {
         res.status(400).json('this family is not found')
     }
-    Familiys.push(famil)
 
-})
+}))
 
 module.exports = router

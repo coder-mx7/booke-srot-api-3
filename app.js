@@ -1,24 +1,34 @@
 const express = require('express');
 const app = express();
-const booksPath = require('./routes/books')
-const familyPath = require('./routes/authrs')
-const mongoose = require('mongoose')
-const Author = require('./models/Authrs')
+const mongoose = require('mongoose');
+const cors = require('cors'); // استيراد مكتبة cors
+const authorsPath = require('./routes/authrs') // تم تغيير هذا السطر
+const loginPath = require('./routes/login')
+const loger = require('./middleware/logger') // تأكد من أن هذا المسار صحيح
+const dotenv = require('dotenv')
+dotenv.config()
+// تكوين cors للسماح بالوصول من مصادر مختلفة
+app.use(cors());
 
-
-// conniction to database
-//localhost:27017
-mongoose.connect('mongodb+srv://mohmich15:MqiDUvxUQVA8CsRt@cluster0.hd1kxcp.mongodb.net/?retryWrites=true&w=majority')
+// اتصال بقاعدة البيانات
+mongoose.connect('mongodb+srv://amiinomino72:L8c8MRz5mjLLR5JV@backendone.yvhjywa.mongodb.net/?retryWrites=true&w=majority')
     .then(() => {
         console.log('Connection to db...')
-    }).catch((error) => {
-        console.error('Failed to connect to the database...', error);
     })
-// Aply Middlewares
-app.use(express.json())
-// routs
-app.use('/api/books', booksPath)
-app.use('/api/family', familyPath)
+    .catch((error) => {
+        console.error('Failed to connect to the database...', error);
+    });
+
+// تفعيل middleware لفهم البيانات بصيغة JSON
+app.use(express.json());
+
+//middleware
+app.use(loger) // تم تغيير هذا السطر
+
+// تعريف واستخدام المسارات
+app.use('/api/books', require('./routes/books'));
+app.use('/api/authors', authorsPath); // تم تغيير هذا السطر
+app.use('/api/login', loginPath );
 
 const PORT = 5000;
 

@@ -1,5 +1,6 @@
 const { boolean } = require("joi");
 const mongoose = require("mongoose");
+const Joi = require('joi');
 
 const UserSchema = new mongoose.Schema(({
     email: {
@@ -19,12 +20,15 @@ const UserSchema = new mongoose.Schema(({
     password: {
         type: String,
         required: true,
-        maxlength: 50,
+        maxlength: 100,
         minlength: 6,
     },
-
+    isAdminn: {
+        type: Boolean,
+        default: false
+    },
 }))
-const Datauser =  mongoose.Schema('user', UserSchema)
+const Datauser = mongoose.model('user', UserSchema);
 
 
 
@@ -37,7 +41,7 @@ function ValiditonRijsterUser(opj) {
         email: Joi.string().trim().min(3).max(30).required(),
         username: Joi.string().trim().min(3).max(30).required(),
         password: Joi.string().trim().min(6).max(30).required(),
-        isAdmin:Joi.bool()
+        isAdmin:Joi.boolean()
     })
 
     return schema.validate(opj)
@@ -49,8 +53,10 @@ function ValiditonRijsterUser(opj) {
 function ValiditonLoginUser(opj) {
 
     const schema = Joi.object({
-        email: Joi.string().trim().min(3).max(30).required(),
-        password: Joi.string().trim().min(6).max(30).required(),
+        email: Joi.string().trim().min(5).max(100).required(),
+        password: Joi.string().trim().min(6).max(100).required(),
+        isAdmin:Joi.boolean()
+
     })
 
     return schema.validate(opj)
@@ -61,10 +67,10 @@ function ValiditonLoginUser(opj) {
 function ValiditonUpdate(opj) {
 
     const schema = Joi.object({
-        email: Joi.string().trim().min(3).max(30).required(),
-        username: Joi.string().trim().min(3).max(30).required(),
-        password: Joi.string().trim().min(6).max(30).required(),
-        isAdmin:Joi.bool()
+        email: Joi.string().trim().min(3).max(30),
+        username: Joi.string().trim().min(3).max(30),
+        password: Joi.string().trim().min(6).max(30),
+        isAdmin:Joi.boolean()
     })
 
     return schema.validate(opj)

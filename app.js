@@ -1,15 +1,14 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const cors = require('cors'); // استيراد مكتبة cors
-const loger = require('./middleware/logger') // تأكد من أن هذا المسار صحيح
-const dotenv = require('dotenv')
+const cors = require('cors'); 
+const loger = require('./middleware/logger') 
 const {notFound,erorHandler} = require('./middleware/errors')
+const userpath = require('./routes/user')
+const dotenv = require('dotenv')
 dotenv.config()
-// تكوين cors للسماح بالوصول من مصادر مختلفة
 app.use(cors());
 
-// اتصال بقاعدة البيانات
 mongoose.connect('mongodb://127.0.0.1:27017/servers')
     .then(() => {
         console.log('Connection to db...')
@@ -27,7 +26,8 @@ app.use(loger) // تم تغيير هذا السطر
 // تعريف واستخدام المسارات
 app.use('/api/books', require('./routes/books'));
 app.use('/api/authors', require('./routes/authrs')); // تم تغيير هذا السطر
-app.use('/api/login', require('./routes/user') );
+app.use('/api/auth', require('./routes/auth') );
+app.use('/api/users',userpath);
 
 
 //Erorr hanlder ùiddleware 

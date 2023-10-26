@@ -1,36 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const Joi = require('joi');
-const BookeM = require('../models/Bookes')
+const {BookeM,schemaٍValiditoncreate,schemaٍValiditonupdate} = require('../models/Bookes')
 const asyncHandler = require('express-async-handler')
 
-const books = [
-    {
-        id: 1,
-        name: 'Book One',
-        author: 'Mohamed',
-        titile: 'about black sin',
-        price: 10,
-        cover: 'soft cover'
 
-    },
-    {
-        id: 2,
-        name: 'Book Two',
-        author: 'Ahmed',
-        titile: 'about black sin',
-        price: 10,
-        cover: 'soft cover'
-    },
-    {
-        id: 3,
-        name: 'Book Three',
-        author: 'Sara',
-        titile: 'about black sin',
-        price: 10,
-        cover: 'soft cover'
-    }
-];
 
 // HTTP methods/verbs
 
@@ -75,30 +48,18 @@ router.get('/:id', async (req, res) => {
 
 
 
-function schemaٍValiditon(opj) {
 
-    const schema = Joi.object({
-        titile: Joi.string().trim().min(3).max(30).required(),
-        name: Joi.string().trim().min(3).max(30).required(),
-        author: Joi.string().trim().min(3).max(30).required(),
-        price: Joi.number().min(0).required(),
-        cover: Joi.string().trim().min(3).max(30).required(),
-    })
-
-    return schema.validate(opj)
-
-}
 
 
 
 router.post('/', async (req, res) => {
-    const { error } = schemaٍValiditon(req.body)
+    const { error } = schemaٍValiditoncreate(req.body)
 
     if (error) {
         return res.status(400).json(error.details[0].message)
     }
 
-    titile = req.body.titile,
+    title = req.body.title,
         namee = req.body.name,
         cover = req.body.cover,
         price = req.body.price,
@@ -106,7 +67,7 @@ router.post('/', async (req, res) => {
 
     const book = new BookeM(
         {
-            titile: titile,
+            title: title,
             name: namee,
             cover: cover,
             price: price,
@@ -128,19 +89,7 @@ router.post('/', async (req, res) => {
 
 
 
-function schemaٍValiditonupdate(opj) {
 
-    const schema = Joi.object({
-        titile: Joi.string().trim().min(3).max(30),
-        name: Joi.string().trim().min(3).max(30),
-        author: Joi.string().trim().min(3).max(30),
-        price: Joi.number().min(0),
-        cover: Joi.string().trim().min(3).max(30),
-    })
-
-    return schema.validate(opj)
-
-}
 
 
 
@@ -156,15 +105,13 @@ router.put('/:id', asyncHandler(async (req, res) => {
     let id = req.params.id
     const book = await BookeM.findByIdAndUpdate(id, {
         $set: {
-            titile: req.body.titile,
+            title: req.body.title,
 
         }
     }, {
         new: true
     })
-    if (book) {
         res.send(book)
-    }
 
 
 

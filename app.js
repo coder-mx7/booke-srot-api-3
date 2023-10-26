@@ -2,16 +2,15 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors'); // استيراد مكتبة cors
-const authorsPath = require('./routes/authrs') // تم تغيير هذا السطر
-const loginPath = require('./routes/login')
 const loger = require('./middleware/logger') // تأكد من أن هذا المسار صحيح
 const dotenv = require('dotenv')
+const {notFound,erorHandler} = require('./middleware/errors')
 dotenv.config()
 // تكوين cors للسماح بالوصول من مصادر مختلفة
 app.use(cors());
 
 // اتصال بقاعدة البيانات
-mongoose.connect('mongodb+srv://amiinomino72:L8c8MRz5mjLLR5JV@backendone.yvhjywa.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect('mongodb://127.0.0.1:27017/servers')
     .then(() => {
         console.log('Connection to db...')
     })
@@ -27,8 +26,15 @@ app.use(loger) // تم تغيير هذا السطر
 
 // تعريف واستخدام المسارات
 app.use('/api/books', require('./routes/books'));
-app.use('/api/authors', authorsPath); // تم تغيير هذا السطر
-app.use('/api/login', loginPath );
+app.use('/api/authors', require('./routes/authrs')); // تم تغيير هذا السطر
+app.use('/api/login', require('./routes/user') );
+
+
+//Erorr hanlder ùiddleware 
+
+app.use(notFound)
+
+app.use(erorHandler)
 
 const PORT = 5000;
 
